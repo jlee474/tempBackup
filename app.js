@@ -1,20 +1,13 @@
-console.log("Hello world!")
+console.log("Hello world! This is the app.js module");
 
-const Sequelize = require('sequelize');
-
-const sequelize = new Sequelize({
-   // dialect parameter specifies version of SQL, the SQL dialect
-   dialect: 'sqlite',
-   // the storage key specifies the file path or the storage engine for SQLite
-   storage: 'movies.db',
-   // logging: false    <-- this will disable logging
-});
+const db = require('./db'); // or require('./db/index.js')
+const {Movie} = db.models;
 
 // async IIFE Immediately Invoked Function Expression
 (async () => {
    try {
       // sequelize.authenticate function returns a Promise object
-      await sequelize.authenticate();
+      await db.sequelize.authenticate();
       console.log("Database authentication successful")
    } catch (error) {
       console.error("oops, looks like there was an error in the try catch block: ", error);
@@ -23,21 +16,11 @@ const sequelize = new Sequelize({
 
 console.log("async test marker 1")
 
-class Movie extends Sequelize.Model {
-   
-   // constructor() {
-      // gives an error when I create a constructor here. okay....
-   // }
-   
-};
-
-Movie.init({
-   title: Sequelize.STRING
-}, { sequelize });  // same as {sequelize: sequelize}
+console.log(Movie);
 
 (async () => {
 
-   await sequelize.sync( {force: true} );  // shouldn't this line go inside the catch block?
+   await db.sequelize.sync( {force: true} );  // shouldn't this line go inside the catch block?
    console.log("Database synchronization successful");
 
    try {
@@ -59,7 +42,6 @@ Movie.init({
       });
       */
 
-
       // the example below uses Promises. The movieInstances variable is an array of Classes.
       // each class is a [[Prototype]]: Model
 
@@ -79,7 +61,6 @@ Movie.init({
    }
 
 })();
-
 
 console.log("async test marker 2")
 
