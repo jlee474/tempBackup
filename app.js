@@ -1,7 +1,8 @@
 console.log("Hello world! This is the app.js module");
 
 const db = require('./db'); // or require('./db/index.js')
-const {Movie} = db.models;
+const {Movie} = db.models; // short hand form for writing Movie = db.models.Movie
+const Person = db.models.Person;
 
 // async IIFE Immediately Invoked Function Expression
 (async () => {
@@ -47,17 +48,59 @@ console.log(Movie);
 
       const movieInstances = await Promise.all([
          Movie.create({
-            title: 'Toy Story'
+            title: 'Toy Story',
+            runtime: 81,
+            releaseDate: "1995-11-22",
+            isAvailableonVHS: true
          }),
          Movie.create({
-            title: 'The Incredibles'
+            title: 'The Incredibles',
+            runtime: 115,
+            releaseDate: "2004-04-14",
+            isAvailableonVHS: true
          }),
-         ]);
-         const moviesJSON = movieInstances.map(movie => movie.toJSON());
-         console.log(moviesJSON);
+         Movie.create({
+            title: 'Candy Man',
+            runtime: 90,
+            releaseDate: "2001-05-03",
+            isAvailableonVHS: false
+         }),
+      ]);
+      const moviesJSON = movieInstances.map(movie => movie.toJSON());
+      console.log(moviesJSON);
+
+      const personInstances = async function () {
+         let arrayPersons = [
+            await Person.create({
+               firstName: "Joe",
+               lastName: "Schmoe"
+            }),
+            await Person.create({
+               firstName: "Jason",
+               lastName: "Lee"
+            }),
+            await Person.create({
+               firstName: "Tom",
+               lastName: "Cruise"
+            })
+         ];
+         
+         return arrayPersons;
+      }
+      
+      const persons = await personInstances(); // without the await prefix, the promise state is "pending"
+      const personJSON = persons.map(person => person.toJSON() );
+      
+      console.log(personJSON);
 
    } catch (error) {
-      console.error("Error connecting to the database: ", error);
+      if (error.name === "SequelizeValidationError") {
+         const theErrors = error.errors.map(i => i.message)
+            console.log("A SequelizeValidationError has occured: ", theErrors);
+      } else {
+         console.error("An error (other than SequelizeValidationError) has occurred: ", error);
+         throw error;
+      }
    }
 
 })();
